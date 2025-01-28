@@ -1,0 +1,29 @@
+---
+- name: Install JBoss on RHEL
+  hosts: all
+  become: yes
+  vars:
+    jboss_user: jboss
+    jboss_group: jboss
+    jboss_home: /opt/jboss
+    jboss_download_url: "https://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.zip"  # Replace with your desired JBoss version URL
+    jboss_install_dir: /opt/jboss/jboss-as-7.1.1.Final
+  tasks:
+    - name: Create JBoss group
+      group:
+        name: "{{ jboss_group }}"
+        state: present
+    - name: Create JBoss user
+      user:
+        name: "{{ jboss_user }}"
+        group: "{{ jboss_group }}"
+        create_home: no
+        home: "{{ jboss_home }}"
+        shell: /bin/bash
+    - name: Create JBoss home directory
+      file:
+        path: "{{ jboss_home }}"
+        state: directory
+        owner: "{{ jboss_user }}"
+        group: "{{ jboss_group }}"
+        mode: '0755'
