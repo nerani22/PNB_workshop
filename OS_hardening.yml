@@ -15,6 +15,7 @@
         name: firewalld
         state: started
         enabled: yes
+      become: yes
     - name: Set SELinux to enforcing mode
       selinux:
         policy: targeted
