@@ -12,7 +12,7 @@
     - name: Install required packages
       yum:
         name:
-          - java-1.7.0-openjdk-devel
+          - java-1.8.0-openjdk-devel
           - unzip
         state: present
     - name: Create JBoss group
