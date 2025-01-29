@@ -9,7 +9,8 @@
        kind: Namespace
        state: present
       delegate_to: localhost
-    - name: Deploy Book info  application
+      
+    - name: Deploy Book info application
       redhat.openshift.k8s:
        state: present
        definition:
@@ -36,6 +37,7 @@
                  - containerPort: 8080
                    name: http-server
       delegate_to: localhost
+      
     - name: Create a Service for Book Info application
       redhat.openshift.k8s:
        state: present
@@ -48,13 +50,15 @@
            labels:
              name: book-import
          spec:
-           type: ClusterIP
+           #type: ClusterIP
+           type: NodePort
            ports:
            - port: 80
              targetPort: 8080
            selector:
              name: book-import
       delegate_to: localhost
+      
     - name: Create route for Book Info application
       redhat.openshift.k8s:
        state: present
