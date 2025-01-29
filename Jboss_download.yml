@@ -52,6 +52,14 @@
         name: wildfly
         enabled: yes
         state: started
+
+    - name: print 
+      ansible.builtin.shell: systemctl status wildfly
+      register: output
+      ignore_errors: yes
+
+    - debug:
+        var: output.stderr_lines
     
     - name: Clean up downloaded tar file
       file:
