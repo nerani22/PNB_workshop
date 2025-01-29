@@ -18,8 +18,8 @@
         create_home: yes
         state: present
 
-    - name: Add user to sudo group
-      user:
-        name: "{{ username }}"
-        groups: sudo
-        append: yes
+    #- name: Add user to sudo group
+    #  user:
+    #    name: "{{ username }}"
+    #    groups: sudo
+    #    append: yes
