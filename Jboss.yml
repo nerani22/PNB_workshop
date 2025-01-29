@@ -1,0 +1,67 @@
+---
+- name: Install JBoss/WildFly on RHEL 9
+  hosts: all
+  become: yes
+  vars:
+    jboss_version: "25.0.0.Final"  # You can change this to the desired WildFly/JBoss version
+    jboss_download_url: "https://github.com/wildfly/wildfly/releases/download/{{ jboss_version }}/wildfly-{{ jboss_version }}.tar.gz"
+    jboss_install_dir: "/opt/wildfly"
+    jboss_user: "wildfly"
+    jboss_group: "wildfly"
+  
+  tasks:
+    
+    - name: Install required packages (Java, wget, tar)
+      dnf:
+        name:
+          - java-11-openjdk
+          - wget
+          - tar
+        state: present
+    
+    - name: Create WildFly user and group
+      user:
+        name: "{{ jboss_user }}"
+        group: "{{ jboss_group }}"
+        create_home: no
+    
+    - name: Download WildFly
+      get_url:
+        url: "{{ jboss_download_url }}"
+        dest: "/tmp/wildfly-{{ jboss_version }}.tar.gz"
+    
+    - name: Extract WildFly
+      unarchive:
+        src: "/tmp/wildfly-{{ jboss_version }}.tar.gz"
+        dest: "{{ jboss_install_dir }}"
+        remote_src: yes
+    
+    - name: Set ownership of the WildFly directory
+      file:
+        path: "{{ jboss_install_dir }}/wildfly-{{ jboss_version }}"
+        owner: "{{ jboss_user }}"
+        group: "{{ jboss_group }}"
+        recurse: yes
+    
+    - name: Create symlink to the wildfly directory
+      file:
+        src: "{{ jboss_install_dir }}/wildfly-{{ jboss_version }}"
+        dest: "{{ jboss_install_dir }}/current"
+        state: link
+    
+    - name: Configure WildFly as a service
+      template:
+        src: "wildfly.service.j2"
+        dest: "/etc/systemd/system/wildfly.service"
+    
+    - name: Reload systemd and enable WildFly service
+      systemd:
+        daemon_reload: yes
+        name: wildfly
+        enabled: yes
+        state: started
+    
+    - name: Clean up downloaded tar file
+      file:
+        path: "/tmp/wildfly-{{ jboss_version }}.tar.gz"
+        state: absent
