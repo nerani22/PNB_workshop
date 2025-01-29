@@ -8,6 +8,7 @@
     jboss_install_dir: "/opt/wildfly"
     jboss_user: "wildfly"
     jboss_group: "wildfly"
+    jboss_home: /opt/jboss
   
   tasks:
     
@@ -19,11 +20,29 @@
           #- tar
         #state: present
     
-    - name: Create WildFly user and group
+    #- name: Create WildFly user and group
+      #user:
+        #name: "{{ jboss_user }}"
+        #group: "{{ jboss_group }}"
+        #create_home: no
+    - name: Create JBoss group
+      group:
+        name: "{{ jboss_group }}"
+        state: present
+    - name: Create JBoss user
       user:
         name: "{{ jboss_user }}"
         group: "{{ jboss_group }}"
         create_home: no
+        home: "{{ jboss_home }}"
+        shell: /bin/bash
+    - name: Create JBoss home directory
+      file:
+        path: "{{ jboss_home }}"
+        state: directory
+        owner: "{{ jboss_user }}"
+        group: "{{ jboss_group }}"
+        mode: '0755'
     
     - name: Download WildFly
       get_url:
