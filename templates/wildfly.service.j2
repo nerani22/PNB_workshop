@@ -1,0 +1,14 @@
+[Unit]
+Description=WildFly Application Server
+After=network.target
+
+[Service]
+Type=simple
+User=wildfly
+Group=wildfly
+ExecStart={{ jboss_install_dir }}/current/bin/standalone.sh -b 0.0.0.0
+ExecStop={{ jboss_install_dir }}/current/bin/jboss-cli.sh --connect command=:shutdown
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
