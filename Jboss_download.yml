@@ -59,7 +59,7 @@
       ignore_errors: yes
 
     - debug:
-        var: output.stderr_lines
+        msg: "WildFly status: {{ output }}"
     
     - name: Clean up downloaded tar file
       file:
