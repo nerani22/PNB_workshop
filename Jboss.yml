@@ -11,13 +11,13 @@
   
   tasks:
     
-    - name: Install required packages (Java, wget, tar)
-      dnf:
-        name:
-          - java-11-openjdk
-          - wget
-          - tar
-        state: present
+    #- name: Install required packages (Java, wget, tar)
+      #dnf:
+        #name:
+          #- java-11-openjdk
+          #- wget
+          #- tar
+        #state: present
     
     - name: Create WildFly user and group
       user:
