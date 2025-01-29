@@ -20,8 +20,8 @@
       dnf:
         name:
           - java-17-openjdk
-          #- wget
-          #- tar
+          - wget
+          - tar
         state: present
     
     #- name: Create WildFly user and group
