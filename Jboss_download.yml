@@ -1,54 +1,59 @@
+
 ---
-- name: Install JBoss on RHEL
+- name: Install JBoss/WildFly on RHEL 9
   hosts: all
   become: yes
   vars:
-    jboss_user: jboss
-    jboss_group: jboss
+    jboss_version: "25.0.0.Final"  # You can change this to the desired WildFly/JBoss version
+    #jboss_download_url: "https://github.com/wildfly/wildfly/releases/download/{{ jboss_version }}/wildfly-{{ jboss_version }}.tar.gz"
+    #jboss_install_dir: "/opt/wildfly"
+    jboss_user: "wildfly"
+    jboss_group: "wildfly"
+    jboss_download_url: "https://github.com/wildfly/wildfly/releases/download/{{ jboss_version }}/wildfly-{{ jboss_version }}.tar.gz"
+    jboss_install_dir: "/opt/jboss"
+    #jboss_user: "jboss"
+    #jboss_group: "jboss"
     jboss_home: /opt/jboss
-    jboss_download_url: "https://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.zip"  # Replace with your desired JBoss version URL
-    jboss_install_dir: /opt/jboss/jboss-as-7.1.1.Final
+  
   tasks:
-    - name: Download JBoss
+    
+    - name: Download WildFly
       get_url:
         url: "{{ jboss_download_url }}"
-        dest: "/tmp/jboss-as.zip"
-    - name: Extract JBoss
+        dest: "/tmp/wildfly-{{ jboss_version }}.tar.gz"
+    
+    - name: Extract WildFly
       unarchive:
-        src: "/tmp/jboss-as.zip"
-        dest: "{{ jboss_home }}"
+        src: "/tmp/wildfly-{{ jboss_version }}.tar.gz"
+        dest: "{{ jboss_install_dir }}"
         remote_src: yes
-        creates: "{{ jboss_install_dir }}"
-    - name: Set ownership for JBoss directory
+    
+    - name: Set ownership of the WildFly directory
       file:
-        path: "{{ jboss_install_dir }}"
-        state: directory
+        path: "{{ jboss_install_dir }}/wildfly-{{ jboss_version }}"
         owner: "{{ jboss_user }}"
         group: "{{ jboss_group }}"
         recurse: yes
-    - name: Set up JBoss systemd service
-      copy:
-        content: |
-          [Unit]
-          Description=JBoss Application Server
-          After=network.target
-          [Service]
-          User={{ jboss_user }}
-          Group={{ jboss_group }}
-          ExecStart={{ jboss_install_dir }}/bin/standalone.sh -b 0.0.0.0
-          ExecReload=/bin/kill -HUP $MAINPID
-          LimitNOFILE=102642
-          [Install]
-          WantedBy=multi-user.target
-        dest: /etc/systemd/system/jboss.service
-        owner: root
-        group: root
-        mode: '0644'
-    - name: Reload systemd daemon
+    
+    - name: Create symlink to the wildfly directory
+      file:
+        src: "{{ jboss_install_dir }}/wildfly-{{ jboss_version }}"
+        dest: "{{ jboss_install_dir }}/current"
+        state: link
+    
+    - name: Configure WildFly as a service
+      template:
+        src: "wildfly.service.j2"
+        dest: "/etc/systemd/system/wildfly.service"
+    
+    - name: Reload systemd and enable WildFly service
       systemd:
         daemon_reload: yes
-    - name: Enable and start JBoss service
-      systemd:
-        name: jboss
+        name: wildfly
         enabled: yes
         state: started
+    
+    - name: Clean up downloaded tar file
+      file:
+        path: "/tmp/wildfly-{{ jboss_version }}.tar.gz"
+        state: absent
