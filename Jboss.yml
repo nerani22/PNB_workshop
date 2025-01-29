@@ -4,10 +4,14 @@
   become: yes
   vars:
     jboss_version: "25.0.0.Final"  # You can change this to the desired WildFly/JBoss version
+    #jboss_download_url: "https://github.com/wildfly/wildfly/releases/download/{{ jboss_version }}/wildfly-{{ jboss_version }}.tar.gz"
+    #jboss_install_dir: "/opt/wildfly"
+    #jboss_user: "wildfly"
+    #jboss_group: "wildfly"
     jboss_download_url: "https://github.com/wildfly/wildfly/releases/download/{{ jboss_version }}/wildfly-{{ jboss_version }}.tar.gz"
-    jboss_install_dir: "/opt/wildfly"
-    jboss_user: "wildfly"
-    jboss_group: "wildfly"
+    jboss_install_dir: "/opt/jboss"
+    jboss_user: "jboss"
+    jboss_group: "jboss"
     jboss_home: /opt/jboss
   
   tasks:
