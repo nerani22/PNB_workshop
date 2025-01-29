@@ -4,9 +4,9 @@
   become: yes  # Run as sudo/root
   vars:
     #username: "devuser"  # Change this as needed
-    username: {{user_name}}
+    username: "{{user_name}}"
     #user_password: "Password123!"  # Change or encrypt this using Ansible Vault
-    user_password: {{password}}
+    user_password: "{{password}}"
     user_shell: "/bin/bash"
 
   tasks:
